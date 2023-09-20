@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>To Do List</title>
+</head>
+<body>
+    <!-- Input field to add tasks -->
+    <form id="taskForm" action="/addTask" method="POST">
+        <input type="text" id="taskInput" name="taskText" placeholder="Enter a new task">
+        <button type="submit">Add</button>
+    </form>
+
+    <!-- Task list -->
+    <ul id="taskList">
+        <!-- Each task item includes a checkbox and a label -->
+        <!-- <input type="checkbox" class="taskCheckbox">
+        <label class="taskLabel">Task 1</label><br>
+        <input type="checkbox" class="taskCheckbox">
+        <label class="taskLabel">Task 2</label><br>
+        <input type="checkbox" class="taskCheckbox">
+        <label class="taskLabel">Task 3</label><br> -->
+        <!-- <li>
+            
+        </li>
+        <li>
+            
+        </li>
+        <li>
+            
+        </li> -->
+    </ul>
+
+    <script src="script.js" charset="utf-8"></script>
+</body>
+</html>
