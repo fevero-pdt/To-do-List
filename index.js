@@ -9,7 +9,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = 3000;
 
-mongoose.connect('mongodb://localhost:27017/todo-list', { useNewUrlParser: true, useUnifiedTopology: true });
+
+
+mongoose.connect('mongodb+srv://Cluster82756:RFZkd35SSE9m@cluster82756.js5lqya.mongodb.net/todo-list', { useNewUrlParser: true, useUnifiedTopology: true });
 
 const taskSchema = new mongoose.Schema({
     text: String,
