@@ -2,55 +2,104 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import mongodb from 'mongodb';
-import assert from 'assert';
+import mongoose from 'mongoose';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 const port = 3000;
 
+mongoose.connect('mongodb://localhost:27017/todo-list', { useNewUrlParser: true, useUnifiedTopology: true });
 
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// Create an array to store tasks in memory
-const taskList = [];
-
-app.use(express.static(__dirname + '/public')); // Serve static files from the 'public' directory
-
-
-
-
-// Get all tasks from memory
-app.get('/tasks', (req, res) => {
-    res.json(taskList);
+const taskSchema = new mongoose.Schema({
+    text: String,
+    completed: Boolean,
 });
 
-// Add a new task to the list
-app.post('/addTask', (req, res) => {
+const Task = mongoose.model('Task', taskSchema);
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(__dirname + '/public'));
+
+// Get all tasks from the database
+app.get('/tasks', async (req, res) => {
     
-    const taskText = req.body.taskText;
-    // console.log(taskText);
-
-    if (taskText) {
-        // Add the task to the in-memory list
-        
-        taskList.push({ text: taskText });
-        
-
-        // Send a success response
-        res.status(200).send('Task added successfully.');
-    } else {
-        // Send an error response if the task text is empty
-        res.status(400).send('Task text cannot be empty.');
+    try {
+        const tasks = await Task.find({});
+        res.json(tasks);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Internal server error');
     }
 });
 
-// clicking the checkbox will send a POST request to the server to mark the task as complete
-app.post('/completeTask', (req, res) => {
-    const taskIndex = req.body.taskIndex;
-    console.log(taskIndex);
+// Add a new task to the database
+app.post('/addTask', async (req, res) => {
+    const taskText = req.body.taskText;
+
+    // tastText not in the Task schema
+    const tasks = await Task.find({});
+    // console.log(tasks);
+    
+    
+
+    var present=false;
+    for(var i=0; i<tasks.length; i++) {
+        if (taskText === tasks[i].text) {
+            present = true;
+            // console.log('Task already exists');
+            // res.status(400).send('Task already exists');
+        }
+    };
+
+    // const present = tasks.includes(taskText);
+    // console.log(present);
+
+    if (taskText && !present) {
+        try {
+            const task = new Task({ text: taskText, completed: false });
+            await task.save();
+            res.status(200).send('Task added successfully.');
+        } catch (err) {
+            console.error(err);
+            res.status(500).send('Failed to add task.');
+        }
+    } else {
+        res.status(400).send('Task text cannot be empty.');
+    }
+
+    // if (taskText && taskText != tasks[i].text) {
+        
 });
+
+// Update the completion status of a task
+app.post('/completeTask', async (req, res) => {
+    const taskText = req.body.taskText;
+    const completed = req.body.completed;
+
+    const booleanCompleted = completed === 'true';
+
+    if (typeof taskText === 'string' && typeof booleanCompleted === 'boolean') {
+        // Update the task status in both the in-memory list and the database
+        try {
+            const task = await Task.updateOne({text: taskText}, { completed: booleanCompleted });
+            // console.log(task);
+            // await task.save();
+
+            res.status(200).send('Task status updated successfully.');
+        } catch (err) {
+            console.error(err);
+            res.status(500).send('Failed to update task status.');
+        }
+
+    } else {
+        res.status(400).send('Invalid request.');
+    }
+});
+
+
+
+
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);

@@ -7,32 +7,34 @@
     <title>To Do List</title>
 </head>
 <body>
+    <div class="Date">
+        <h1>
+            <p>Today:</p> <p class="todayDate"></p>
+        </h1>
+    </div>
+    
     <!-- Input field to add tasks -->
-    <form id="taskForm" action="/addTask" method="POST">
-        <input type="text" id="taskInput" name="taskText" placeholder="Enter a new task">
-        <button type="submit">Add</button>
-    </form>
+    <div class="Events">
+        
+    
+        <!-- Task list -->
+        <div id="taskList" class="tasks">
+            
+        </div>
 
-    <!-- Task list -->
-    <ul id="taskList">
-        <!-- Each task item includes a checkbox and a label -->
-        <!-- <input type="checkbox" class="taskCheckbox">
-        <label class="taskLabel">Task 1</label><br>
-        <input type="checkbox" class="taskCheckbox">
-        <label class="taskLabel">Task 2</label><br>
-        <input type="checkbox" class="taskCheckbox">
-        <label class="taskLabel">Task 3</label><br> -->
-        <!-- <li>
-            
-        </li>
-        <li>
-            
-        </li>
-        <li>
-            
-        </li> -->
-    </ul>
+        <form id="taskForm" action="/addTask" method="POST">
+            <input type="text" id="taskInput" name="taskText" placeholder="Enter a new task">
+            <button class="addButton" type="submit">Add</button>
+        </form>
+    </div>
+    
+    <footer>
+        <p>Copyright © from footer</p>
+    </footer>
 
     <script src="script.js" charset="utf-8"></script>
+    <!-- <script src="index.js" charset="utf-8"></script> -->
+
+    
 </body>
 </html>

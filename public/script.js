@@ -1,42 +1,25 @@
+
+
 document.addEventListener('DOMContentLoaded', () => {
     const taskForm = document.getElementById("taskForm");
     const taskInput = document.getElementById("taskInput");
     const taskList = document.getElementById("taskList");
-    const taskCheckboxes = document.querySelectorAll(".taskCheckbox");
-    const taskLabels = document.querySelectorAll(".taskLabel");
 
-    // Function to create a new task item
-    function createTaskItem(taskText) {
-        const listItem = document.createElement("li");
+    // Display today's date
+    // const today = new Date("June 24, 2023 11:13:00");
 
-        // Create a checkbox input
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.className = "taskCheckbox";
-        // listItem.appendChild(checkbox);
 
-        // Create a label for the checkbox
-        const label = document.createElement("label");
-        label.className = "taskLabel";
-        label.textContent = taskText;
-        // listItem.appendChild(label);
+    const today = new Date();
+    const currentDate = today.getDate();
+    const currentMonth = today.getMonth();
+    const currentYear = today.getFullYear();
 
-        const breakLine = document.createElement("br");
+    
+    document.getElementsByClassName("todayDate")[0].innerHTML = currentDate + "/" + currentMonth + "/" + currentYear;
+    
+    // document.getElementsByClassName("todayDate"). = currentDate + "/" + currentMonth + "/" + currentYear;
 
-        // Add the task item to the task list
-        taskList.appendChild(checkbox);
-        taskList.appendChild(label);
-        taskList.appendChild(breakLine);
-
-        // Add a click event listener to the checkbox
-        checkbox.addEventListener("change", () => {
-            if (checkbox.checked) {
-                label.style.textDecoration = "line-through";
-            } else {
-                label.style.textDecoration = "none";
-            }
-        });
-    }
+    // document.getElementsByClassName("todayDate")[1].innerHTML = currentDate;
 
     taskForm.addEventListener("submit", (e) => {
         e.preventDefault(); // Prevent the default form submission
@@ -44,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const taskText = taskInput.value.trim();
 
         if (taskText !== "") {
-            // Send a POST request to add the task
+            // Send a POST request to add the task to the server
             fetch('/addTask', {
                 method: 'POST',
                 headers: {
@@ -60,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             })
             .then(() => {
-                // If task is added successfully, create and add it to the list on the page
+                // If the task is added successfully, add it to the list on the page
                 createTaskItem(taskText);
                 taskInput.value = "";
             })
@@ -70,6 +53,71 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Function to create a new task item on the page
+    function createTaskItem(taskText) {
+        // Create a list item
+        const listItem = document.createElement("div");
+        // listItem.className = "taskItem";
+
+        // Create a checkbox input for marking tasks as completed
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.className = "taskCheckbox";
+
+        // Store a reference to the listItem in the checkbox's data attribute
+        checkbox.dataset.taskText = taskText;
+
+        const label = document.createElement("label");
+        label.className = "taskLabel";
+        label.textContent = taskText;
+
+        const breakLine = document.createElement("br");
+
+        // Append the list item to the task list
+        taskList.appendChild(listItem);
+        listItem.appendChild(checkbox);
+        listItem.appendChild(label);
+        listItem.appendChild(breakLine);
+
+        checkbox.addEventListener("change", () => {
+            const taskText = checkbox.dataset.taskText;
+            const completed = checkbox.checked;
+
+            // Send a POST request to update task completion status
+            fetch('/completeTask', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `taskText=${encodeURIComponent(taskText)}&completed=${encodeURIComponent(completed)}`,
+            })
+            .then((response) => {
+                if (response.ok) {
+                    return response.text();
+                } else {
+                    throw new Error('Failed to update task status.');
+                }
+            })
+            .then(() => {
+                markTaskAsCompleted(listItem, completed);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+        });
+    }
+
+    // Function to mark a task as completed
+    function markTaskAsCompleted(listItem, completed) {
+        if (completed) {
+            // Add a strikethrough style to the label
+            listItem.style.textDecoration = "line-through";
+        } else {
+            // Remove the strikethrough style
+            listItem.style.textDecoration = "none";
+        }
+    }
+
     // Fetch and display existing tasks when the page loads
     fetch('/tasks')
     .then((response) => response.json())
@@ -78,11 +126,11 @@ document.addEventListener('DOMContentLoaded', () => {
             createTaskItem(task.text);
 
             // Check the checkbox if the task is marked as completed
-            // const taskIndex = Array.from(taskLabels).findIndex((label) => label.textContent === task.text);
-            const taskCheckbox = taskList.querySelector(`input.taskCheckbox[value="${task.text}"]`);
-            if (taskIndex !== -1) {
-                taskCheckboxes[taskIndex].checked = true;
-                taskLabels[taskIndex].style.textDecoration = "line-through";
+            if (task.completed) {
+                const listItem = taskList.lastChild;
+                const checkbox = listItem.firstChild;
+                checkbox.checked = true;
+                markTaskAsCompleted(listItem, true);
             }
         });
     })

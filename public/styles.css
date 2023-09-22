@@ -1,1 +1,107 @@
-.
+body{
+    background-color: #DDEDAA;
+    font-family: Arial, Helvetica, sans-serif;
+    /* background-image: url("../list-icon-notebook-with-completed-todo-list-3d-render_471402-428.png"); */
+}
+
+.Date{
+    display: flex;
+    /* flex-direction: row; */
+    /* justify-content: space-between; */
+    /* align-items: center; */
+    background-color: #E98A15;
+    border-radius: 25px; 
+    margin: 0 auto;
+    width: 50%;
+    padding: 20px;
+    border: 1px solid #DDEDAA;
+    margin-top: 10%;
+    margin-bottom: 5%;
+}
+
+.Date h1{
+    color: #DDEDAA;
+    font-size: 2em;
+    margin: 0 auto;
+}
+
+p{
+    color: #DDEDAA;
+    font-size: 1.5em;
+    margin: 0 auto;
+}
+
+.Events{
+    display: flex;
+    flex-direction: column;
+    background-color: #D4F4DD;
+    border-radius: 25px; 
+    margin: 0 auto;
+    width: 50%;
+    padding: 20px;
+    border: 1px solid #DDEDAA;
+    
+    
+}
+
+
+input, label {
+    display: block;
+
+    border-bottom: 1px solid #219C90;
+    padding-bottom: 3%;
+}
+
+input[type=checkbox]{
+    float:left;
+
+    margin-left: auto;
+    margin-right: 20%;
+}
+
+
+
+
+#taskForm{
+    display: flex;
+    flex-flow: row wrap;
+    
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10%;
+}
+
+#taskForm input[type=text]{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+
+    padding: 12px 20%;
+    border: 1px solid #DDEDAA;
+   
+    border: none;
+    border-radius: 10px;
+}
+
+
+
+.addButton{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    background-color: #219C90;
+    color: #DDEDAA;
+    padding: 12px 20px;
+    /* shape-margin: circle(50%); */
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+    /* width: 100%; */
+}
+
+
+.addButton:hover{
+    opacity: 0.8;
+    
+}
+
