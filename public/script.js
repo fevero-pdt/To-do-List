@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function createTaskItem(taskText) {
         // Create a list item
         const listItem = document.createElement("div");
-        // listItem.className = "taskItem";
+        listItem.className = "taskItem";
 
         // Create a checkbox input for marking tasks as completed
         const checkbox = document.createElement("input");
@@ -71,12 +71,54 @@ document.addEventListener('DOMContentLoaded', () => {
         label.className = "taskLabel";
         label.textContent = taskText;
 
+        // delete button
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "deleteButton";
+        deleteButton.textContent = "Delete";
+
+        // Update the delete button event listener
+deleteButton.addEventListener("click", () => {
+    const taskText = checkbox.dataset.taskText;
+
+    // Show a confirmation dialog
+    const confirmDelete = window.confirm("Are you sure you want to delete this task?");
+
+    if (confirmDelete) {
+        // User confirmed deletion, send a POST request to delete the task from the server
+        fetch('/deleteTask', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `taskText=${encodeURIComponent(taskText)}`,
+        })
+        .then((response) => {
+            if (response.ok) {
+                return response.text();
+            } else {
+                throw new Error('Failed to delete task.');
+            }
+        })
+        .then(() => {
+            // If the task is deleted successfully, remove it from the list on the page
+            taskList.removeChild(listItem);
+        })
+        .catch((error) => {
+            console.error(error);
+        });
+    }
+});
+
+
+        
+
         const breakLine = document.createElement("br");
 
         // Append the list item to the task list
         taskList.appendChild(listItem);
         listItem.appendChild(checkbox);
         listItem.appendChild(label);
+        listItem.appendChild(deleteButton);
         listItem.appendChild(breakLine);
 
         checkbox.addEventListener("change", () => {
@@ -85,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Send a POST request to update task completion status
             fetch('/completeTask', {
+                
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
@@ -92,6 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: `taskText=${encodeURIComponent(taskText)}&completed=${encodeURIComponent(completed)}`,
             })
             .then((response) => {
+                console.log(response);
                 if (response.ok) {
                     return response.text();
                 } else {
@@ -99,6 +143,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             })
             .then(() => {
+                // If the task is updated successfully, update its appearance on the page
+                console.log("Task status updated successfully.");
                 markTaskAsCompleted(listItem, completed);
             })
             .catch((error) => {
@@ -107,14 +153,13 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Function to mark a task as completed
     function markTaskAsCompleted(listItem, completed) {
         if (completed) {
-            // Add a strikethrough style to the label
-            listItem.style.textDecoration = "line-through";
+            // Add the "completed" class to the task item
+            listItem.classList.add("completed");
         } else {
-            // Remove the strikethrough style
-            listItem.style.textDecoration = "none";
+            // Remove the "completed" class from the task item
+            listItem.classList.remove("completed");
         }
     }
 

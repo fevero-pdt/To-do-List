@@ -74,6 +74,26 @@ app.post('/addTask', async (req, res) => {
         
 });
 
+// Delete a task from the database
+app.post('/deleteTask', async (req, res) => {
+    const taskText = req.body.taskText;
+
+    if (taskText) {
+        try {
+            const task = await Task.deleteOne({ text: taskText });
+            // console.log(task);
+            // await task.save();
+
+            res.status(200).send('Task deleted successfully.');
+        } catch (err) {
+            console.error(err);
+            res.status(500).send('Failed to delete task.');
+        }
+    } else {
+        res.status(400).send('Task text cannot be empty.');
+    }
+});
+
 // Update the completion status of a task
 app.post('/completeTask', async (req, res) => {
     const taskText = req.body.taskText;
