@@ -37,15 +37,22 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .then((response) => {
                 if (response.ok) {
-                    return response.text();
+                    // If the task is added successfully, add it to the list on the page
+                    createTaskItem(taskText);
+                    taskInput.value = "";
+                    // return response.text();
+                } else if (response.status === 400) {
+                    return response.text().then((errorMessage) => {
+                        // Display an alert with the error message
+                        alert(errorMessage);
+                        
+                        // Reload the page after displaying the alert
+                        // window.location.reload();
+
+                    });
                 } else {
                     throw new Error('Failed to add task.');
                 }
-            })
-            .then(() => {
-                // If the task is added successfully, add it to the list on the page
-                createTaskItem(taskText);
-                taskInput.value = "";
             })
             .catch((error) => {
                 console.error(error);
@@ -77,37 +84,37 @@ document.addEventListener('DOMContentLoaded', () => {
         deleteButton.textContent = "Delete";
 
         // Update the delete button event listener
-deleteButton.addEventListener("click", () => {
-    const taskText = checkbox.dataset.taskText;
+        deleteButton.addEventListener("click", () => {
+            const taskText = checkbox.dataset.taskText;
 
-    // Show a confirmation dialog
-    const confirmDelete = window.confirm("Are you sure you want to delete this task?");
+            // Show a confirmation dialog
+            const confirmDelete = window.confirm("Are you sure you want to delete this task?");
 
-    if (confirmDelete) {
-        // User confirmed deletion, send a POST request to delete the task from the server
-        fetch('/deleteTask', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `taskText=${encodeURIComponent(taskText)}`,
-        })
-        .then((response) => {
-            if (response.ok) {
-                return response.text();
-            } else {
-                throw new Error('Failed to delete task.');
+            if (confirmDelete) {
+                // User confirmed deletion, send a POST request to delete the task from the server
+                fetch('/deleteTask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `taskText=${encodeURIComponent(taskText)}`,
+                })
+                .then((response) => {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        throw new Error('Failed to delete task.');
+                    }
+                })
+                .then(() => {
+                    // If the task is deleted successfully, remove it from the list on the page
+                    taskList.removeChild(listItem);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
             }
-        })
-        .then(() => {
-            // If the task is deleted successfully, remove it from the list on the page
-            taskList.removeChild(listItem);
-        })
-        .catch((error) => {
-            console.error(error);
         });
-    }
-});
 
 
         

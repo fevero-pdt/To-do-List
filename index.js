@@ -49,6 +49,8 @@ app.post('/addTask', async (req, res) => {
     for(var i=0; i<tasks.length; i++) {
         if (taskText === tasks[i].text) {
             present = true;
+            return res.status(400).send('Task already exists');
+            
             // console.log('Task already exists');
             // res.status(400).send('Task already exists');
         }
@@ -67,7 +69,7 @@ app.post('/addTask', async (req, res) => {
             res.status(500).send('Failed to add task.');
         }
     } else {
-        res.status(400).send('Task text cannot be empty.');
+        res.status(401).send('Task text cannot be empty.');
     }
 
     // if (taskText && taskText != tasks[i].text) {
@@ -90,7 +92,7 @@ app.post('/deleteTask', async (req, res) => {
             res.status(500).send('Failed to delete task.');
         }
     } else {
-        res.status(400).send('Task text cannot be empty.');
+        res.status(401).send('Task text cannot be empty.');
     }
 });
 
@@ -115,7 +117,7 @@ app.post('/completeTask', async (req, res) => {
         }
 
     } else {
-        res.status(400).send('Invalid request.');
+        res.status(402).send('Invalid request.');
     }
 });
 
